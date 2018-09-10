@@ -65,6 +65,7 @@ func ping(db gorp.SqlExecutor, s sdk.ExternalService) error {
 	if err != nil || code >= 400 {
 		mon.Lines[0].Status = sdk.MonitoringStatusWarn
 		mon.Lines[0].Value = "Health: KO"
+		log.Warning("[%d] Unable to ping external service: %s%s. %v", code, fmt.Sprintf("%s:%s", s.HealthURL, s.HealthPort), s.HealthPath, err)
 	} else {
 		mon.Lines[0].Status = sdk.MonitoringStatusOK
 		mon.Lines[0].Value = "Health: OK"
