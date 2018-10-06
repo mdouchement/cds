@@ -65,12 +65,12 @@ func (s *Service) synchronizeTasks() error {
 	//Get all hooks from CDS, and synchronize the tasks in cache
 	hooks, err := s.Client.WorkflowAllHooksList()
 	if err != nil {
-		return sdk.WrapError(err, "synchronizeTasks> Unable to get hooks")
+		return sdk.WrapError(err, "Unable to get hooks")
 	}
 
 	allOldTasks, err := s.Dao.FindAllTasks()
 	if err != nil {
-		return sdk.WrapError(err, "synchronizeTasks> Unable to get allOldTasks")
+		return sdk.WrapError(err, "Unable to get allOldTasks")
 	}
 
 	//Delete all old task which are not referenced in CDS API anymore
@@ -169,7 +169,7 @@ func (s *Service) startTasks(ctx context.Context) error {
 	//Load all the tasks
 	tasks, err := s.Dao.FindAllTasks()
 	if err != nil {
-		return sdk.WrapError(err, "Hook> startTasks> Unable to find all tasks")
+		return sdk.WrapError(err, "Unable to find all tasks")
 	}
 
 	//Start the tasks
@@ -187,7 +187,7 @@ func (s *Service) stopTasks() error {
 	//Load all the tasks
 	tasks, err := s.Dao.FindAllTasks()
 	if err != nil {
-		return sdk.WrapError(err, "Hook> stopTasks> Unable to find all tasks")
+		return sdk.WrapError(err, "Unable to find all tasks")
 	}
 
 	//Start the tasks
@@ -227,7 +227,7 @@ func (s *Service) prepareNextScheduledTaskExecution(t *sdk.Task) error {
 	//Load the last execution of this task
 	execs, err := s.Dao.FindAllTaskExecutions(t)
 	if err != nil {
-		return sdk.WrapError(err, "startTask> unable to load last executions")
+		return sdk.WrapError(err, "unable to load last executions")
 	}
 
 	//The last execution has not been executed, let it go
@@ -240,7 +240,7 @@ func (s *Service) prepareNextScheduledTaskExecution(t *sdk.Task) error {
 	confTimezone := t.Config[sdk.SchedulerModelTimezone]
 	loc, err := time.LoadLocation(confTimezone.Value)
 	if err != nil {
-		return sdk.WrapError(err, "startTask> unable to parse timezone: %v", t.Config[sdk.SchedulerModelTimezone])
+		return sdk.WrapError(err, "unable to parse timezone: %v", t.Config[sdk.SchedulerModelTimezone])
 	}
 
 	var exec *sdk.TaskExecution
@@ -251,7 +251,7 @@ func (s *Service) prepareNextScheduledTaskExecution(t *sdk.Task) error {
 		confCron := t.Config[sdk.SchedulerModelCron]
 		cronExpr, err := cronexpr.Parse(confCron.Value)
 		if err != nil {
-			return sdk.WrapError(err, "startTask> unable to parse cron expression: %v", t.Config[sdk.SchedulerModelCron])
+			return sdk.WrapError(err, "unable to parse cron expression: %v", t.Config[sdk.SchedulerModelCron])
 		}
 
 		//Compute a new date
@@ -382,7 +382,7 @@ func (s *Service) doPollerTaskExecution(task *sdk.Task, taskExec *sdk.TaskExecut
 	}
 	events, interval, err := s.Client.PollVCSEvents(taskExec.UUID, workflowID, taskExec.Config["vcsServer"].Value, maxTs)
 	if err != nil {
-		return nil, sdk.WrapError(err, "Hooks> doPollerTaskExecution> Cannot poll vcs events for workflow %s with vcsserver %s", taskExec.Config[sdk.HookConfigWorkflow].Value, taskExec.Config["vcsServer"].Value)
+		return nil, sdk.WrapError(err, "Cannot poll vcs events for workflow %s with vcsserver %s", taskExec.Config[sdk.HookConfigWorkflow].Value, taskExec.Config["vcsServer"].Value)
 	}
 
 	//Prepare the payload
@@ -519,7 +519,7 @@ func executeRepositoryWebHook(t *sdk.TaskExecution) (*sdk.WorkflowNodeRunHookEve
 	case GithubHeader:
 		var pushEvent GithubPushEvent
 		if err := json.Unmarshal(t.WebHook.RequestBody, &pushEvent); err != nil {
-			return nil, sdk.WrapError(err, "Hook> webhookHandler> unable ro read github request: %s", string(t.WebHook.RequestBody))
+			return nil, sdk.WrapError(err, "unable ro read github request: %s", string(t.WebHook.RequestBody))
 		}
 		if pushEvent.Deleted {
 			return nil, nil
@@ -545,7 +545,7 @@ func executeRepositoryWebHook(t *sdk.TaskExecution) (*sdk.WorkflowNodeRunHookEve
 	case GitlabHeader:
 		var pushEvent GitlabPushEvent
 		if err := json.Unmarshal(t.WebHook.RequestBody, &pushEvent); err != nil {
-			return nil, sdk.WrapError(err, "Hook> webhookHandler> unable ro read gitlab request: %s", string(t.WebHook.RequestBody))
+			return nil, sdk.WrapError(err, "unable ro read gitlab request: %s", string(t.WebHook.RequestBody))
 		}
 		// Branch deletion ( gitlab return 0000000000000000000000000000000000000000 as git hash)
 		if pushEvent.After == "0000000000000000000000000000000000000000" {
@@ -572,7 +572,7 @@ func executeRepositoryWebHook(t *sdk.TaskExecution) (*sdk.WorkflowNodeRunHookEve
 	case BitbucketHeader:
 		var pushEvent BitbucketPushEvent
 		if err := json.Unmarshal(t.WebHook.RequestBody, &pushEvent); err != nil {
-			return nil, sdk.WrapError(err, "Hook> webhookHandler> unable ro read bitbucket request: %s", string(t.WebHook.RequestBody))
+			return nil, sdk.WrapError(err, "unable ro read bitbucket request: %s", string(t.WebHook.RequestBody))
 		}
 		payload["git.author"] = pushEvent.Actor.Name
 		payload["git.author.email"] = pushEvent.Actor.EmailAddress
@@ -623,7 +623,7 @@ func executeWebHook(t *sdk.TaskExecution) (*sdk.WorkflowNodeRunHookEvent, error)
 	// For all requests, parse the raw query from the URL
 	values, err := url.ParseQuery(t.WebHook.RequestURL)
 	if err != nil {
-		return nil, sdk.WrapError(err, "Hooks> Unable to parse query url %s", t.WebHook.RequestURL)
+		return nil, sdk.WrapError(err, "Unable to parse query url %s", t.WebHook.RequestURL)
 	}
 
 	// For POST, PUT, and PATCH requests, it also parses the request body as a form
@@ -643,7 +643,7 @@ func executeWebHook(t *sdk.TaskExecution) (*sdk.WorkflowNodeRunHookEvent, error)
 		case ct == "application/x-www-form-urlencoded":
 			formValues, err := url.ParseQuery(string(t.WebHook.RequestBody))
 			if err == nil {
-				return nil, sdk.WrapError(err, "Hooks> Unable webhookto parse body %s", t.WebHook.RequestBody)
+				return nil, sdk.WrapError(err, "Unable webhookto parse body %s", t.WebHook.RequestBody)
 			}
 			copyValues(values, formValues)
 		case ct == "application/json":
@@ -671,7 +671,7 @@ func executeWebHook(t *sdk.TaskExecution) (*sdk.WorkflowNodeRunHookEvent, error)
 			e.ExtraFields.Type = false
 			m, err := e.ToStringMap(bodyJSON)
 			if err != nil {
-				return nil, sdk.WrapError(err, "Hooks> Unable to dump body %s", t.WebHook.RequestBody)
+				return nil, sdk.WrapError(err, "Unable to dump body %s", t.WebHook.RequestBody)
 			}
 
 			//Add the map content to values

@@ -21,7 +21,7 @@ func (s *Service) getEventsHandler() service.Handler {
 
 		var filters sdk.EventFilter
 		if err := api.UnmarshalBody(r, &filters); err != nil {
-			return sdk.WrapError(err, "getEventsHandler> Unable to read body")
+			return sdk.WrapError(err, "Unable to read body")
 		}
 
 		boolQuery := elastic.NewBoolQuery()
@@ -48,7 +48,7 @@ func (s *Service) postEventHandler() service.Handler {
 
 		var e sdk.Event
 		if err := api.UnmarshalBody(r, &e); err != nil {
-			return sdk.WrapError(err, "postEventHandler> Unable to read body")
+			return sdk.WrapError(err, "Unable to read body")
 		}
 
 		_, errI := esClient.Index().Index(s.Cfg.ElasticSearch.IndexEvents).Type(e.EventType).BodyJson(e).Do(context.Background())
@@ -67,7 +67,7 @@ func (s *Service) getMetricsHandler() service.Handler {
 
 		var request sdk.MetricRequest
 		if err := api.UnmarshalBody(r, &request); err != nil {
-			return sdk.WrapError(err, "getMetricsHandler> unable to read request")
+			return sdk.WrapError(err, "unable to read request")
 		}
 
 		stringQuery := fmt.Sprintf("key:%s AND project_key:%s", request.Key, request.ProjectKey)
@@ -100,7 +100,7 @@ func (s *Service) postMetricsHandler() service.Handler {
 
 		var metric sdk.Metric
 		if err := api.UnmarshalBody(r, &metric); err != nil {
-			return sdk.WrapError(err, "postEventHandler> Unable to read body")
+			return sdk.WrapError(err, "Unable to read body")
 		}
 
 		id := fmt.Sprintf("%s-%d-%d-%d-%s", metric.ProjectKey, metric.WorkflowID, metric.ApplicationID, metric.Num, metric.Key)

@@ -90,11 +90,11 @@ func (api *API) deleteGroupHandler() service.Handler {
 		defer tx.Rollback()
 
 		if err := group.DeleteGroupAndDependencies(tx, g); err != nil {
-			return sdk.WrapError(err, "deleteGroupHandler> cannot delete group")
+			return sdk.WrapError(err, "cannot delete group")
 		}
 
 		if err := tx.Commit(); err != nil {
-			return sdk.WrapError(err, "deleteGroupHandler> cannot commit transaction")
+			return sdk.WrapError(err, "cannot commit transaction")
 		}
 
 		groupPerm := sdk.GroupPermission{Group: *g}
@@ -126,7 +126,7 @@ func (api *API) updateGroupHandler() service.Handler {
 
 		var updatedGroup sdk.Group
 		if err := UnmarshalBody(r, &updatedGroup); err != nil {
-			return sdk.WrapError(err, "updateGroupHandler> cannot unmarshal")
+			return sdk.WrapError(err, "cannot unmarshal")
 		}
 
 		if len(updatedGroup.Admins) == 0 {
@@ -238,7 +238,7 @@ func (api *API) addGroupHandler() service.Handler {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 		g := &sdk.Group{}
 		if err := UnmarshalBody(r, g); err != nil {
-			return sdk.WrapError(err, "addGroupHandler> cannot unmarshal")
+			return sdk.WrapError(err, "cannot unmarshal")
 		}
 
 		tx, errb := api.mustDB().Begin()
@@ -248,20 +248,20 @@ func (api *API) addGroupHandler() service.Handler {
 		defer tx.Rollback()
 
 		if _, _, err := group.AddGroup(tx, g); err != nil {
-			return sdk.WrapError(err, "addGroupHandler> cannot add group")
+			return sdk.WrapError(err, "cannot add group")
 		}
 
 		// Add caller into group
 		if err := group.InsertUserInGroup(tx, g.ID, getUser(ctx).ID, false); err != nil {
-			return sdk.WrapError(err, "addGroupHandler> cannot add user %s in group %s", getUser(ctx).Username, g.Name)
+			return sdk.WrapError(err, "cannot add user %s in group %s", getUser(ctx).Username, g.Name)
 		}
 		// and set it admin
 		if err := group.SetUserGroupAdmin(tx, g.ID, getUser(ctx).ID); err != nil {
-			return sdk.WrapError(err, "addGroupHandler> cannot set user group admin")
+			return sdk.WrapError(err, "cannot set user group admin")
 		}
 
 		if err := tx.Commit(); err != nil {
-			return sdk.WrapError(err, "addGroupHandler> cannot commit tx")
+			return sdk.WrapError(err, "cannot commit tx")
 		}
 
 		return service.WriteJSON(w, g, http.StatusCreated)
@@ -310,7 +310,7 @@ func (api *API) addUserInGroupHandler() service.Handler {
 
 		var users []string
 		if err := UnmarshalBody(r, &users); err != nil {
-			return sdk.WrapError(err, "addGroupHandler> cannot unmarshal")
+			return sdk.WrapError(err, "cannot unmarshal")
 		}
 
 		g, errl := group.LoadGroup(api.mustDB(), name)

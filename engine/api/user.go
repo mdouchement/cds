@@ -44,11 +44,11 @@ func (api *API) deleteUserHandler() service.Handler {
 		defer tx.Rollback()
 
 		if err := user.DeleteUserWithDependencies(tx, u); err != nil {
-			return sdk.WrapError(err, "deleteUserHandler> cannot delete user")
+			return sdk.WrapError(err, "cannot delete user")
 		}
 
 		if err := tx.Commit(); err != nil {
-			return sdk.WrapError(err, "deleteUserHandler> cannot commit transaction")
+			return sdk.WrapError(err, "cannot commit transaction")
 		}
 
 		return nil
@@ -188,7 +188,7 @@ func (api *API) postTimelineFilterHandler() service.Handler {
 		u := getUser(ctx)
 		var timelineFilter sdk.TimelineFilter
 		if err := UnmarshalBody(r, &timelineFilter); err != nil {
-			return sdk.WrapError(err, "postTimelineFilterHandler> Unable to read body")
+			return sdk.WrapError(err, "Unable to read body")
 		}
 
 		// Try to load
@@ -198,11 +198,11 @@ func (api *API) postTimelineFilterHandler() service.Handler {
 		}
 		if count == 0 {
 			if err := user.InsertTimelineFilter(api.mustDB(), timelineFilter, u); err != nil {
-				return sdk.WrapError(err, "postTimelineFilterHandler> Cannot insert filter")
+				return sdk.WrapError(err, "Cannot insert filter")
 			}
 		} else {
 			if err := user.UpdateTimelineFilter(api.mustDB(), timelineFilter, u); err != nil {
-				return sdk.WrapError(err, "postTimelineFilterHandler> Unable to update filter")
+				return sdk.WrapError(err, "Unable to update filter")
 			}
 		}
 		return nil
@@ -219,7 +219,7 @@ func (api *API) postUserFavoriteHandler() service.Handler {
 
 		p, err := project.Load(api.mustDB(), api.Cache, params.ProjectKey, getUser(ctx), project.LoadOptions.WithPlatforms, project.LoadOptions.WithFavorites)
 		if err != nil {
-			return sdk.WrapError(err, "postUserFavoriteHandler> unable to load projet")
+			return sdk.WrapError(err, "unable to load projet")
 		}
 
 		switch params.Type {
@@ -230,14 +230,14 @@ func (api *API) postUserFavoriteHandler() service.Handler {
 			}
 
 			if err := workflow.UpdateFavorite(api.mustDB(), wf.ID, getUser(ctx), !wf.Favorite); err != nil {
-				return sdk.WrapError(err, "postUserFavoriteHandler> Cannot change workflow %s/%s favorite", params.ProjectKey, params.WorkflowName)
+				return sdk.WrapError(err, "Cannot change workflow %s/%s favorite", params.ProjectKey, params.WorkflowName)
 			}
 			wf.Favorite = !wf.Favorite
 
 			return service.WriteJSON(w, wf, http.StatusOK)
 		case "project":
 			if err := project.UpdateFavorite(api.mustDB(), p.ID, getUser(ctx), !p.Favorite); err != nil {
-				return sdk.WrapError(err, "postUserFavoriteHandler> Cannot change workflow %s favorite", p.Key)
+				return sdk.WrapError(err, "Cannot change workflow %s favorite", p.Key)
 			}
 			p.Favorite = !p.Favorite
 
@@ -560,7 +560,7 @@ func (api *API) getUserTokenListHandler() service.Handler {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 		tokens, err := token.LoadTokens(api.mustDB(), getUser(ctx))
 		if err != nil {
-			return sdk.WrapError(err, "getUserTokenListHandler> cannot load group for user %s", getUser(ctx).Username)
+			return sdk.WrapError(err, "cannot load group for user %s", getUser(ctx).Username)
 		}
 
 		return service.WriteJSON(w, tokens, http.StatusOK)
@@ -575,7 +575,7 @@ func (api *API) getUserTokenHandler() service.Handler {
 			return sdk.ErrTokenNotFound
 		}
 		if err != nil {
-			return sdk.WrapError(err, "getUserTokenHandler> cannot load token for user %s", getUser(ctx).Username)
+			return sdk.WrapError(err, "cannot load token for user %s", getUser(ctx).Username)
 		}
 		tok.Token = ""
 

@@ -13,7 +13,7 @@ func (c *client) WorkerModelBook(id int64) error {
 	if code > 300 && err == nil {
 		return fmt.Errorf("WorkerModelBook> HTTP %d", code)
 	} else if err != nil {
-		return sdk.WrapError(err, "WorkerModelBook> Error")
+		return sdk.WrapError(err, "Error")
 	}
 	return nil
 }
@@ -64,7 +64,7 @@ func (c *client) WorkerModelSpawnError(id int64, info string) error {
 	if code > 300 && err == nil {
 		return fmt.Errorf("WorkerModelSpawnError> HTTP %d", code)
 	} else if err != nil {
-		return sdk.WrapError(err, "WorkerModelSpawnError> Error")
+		return sdk.WrapError(err, "Error")
 	}
 	return nil
 }

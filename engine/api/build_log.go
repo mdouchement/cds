@@ -56,13 +56,13 @@ func (api *API) getStepBuildLogsHandler() service.Handler {
 		// Check that pipeline exists
 		p, err := pipeline.LoadPipeline(api.mustDB(), projectKey, pipelineName, false)
 		if err != nil {
-			return sdk.WrapError(err, "getStepBuildLogsHandler> Cannot load pipeline %s", pipelineName)
+			return sdk.WrapError(err, "Cannot load pipeline %s", pipelineName)
 		}
 
 		// Check that application exists
 		a, err := application.LoadByName(api.mustDB(), api.Cache, projectKey, appName, getUser(ctx))
 		if err != nil {
-			return sdk.WrapError(err, "getStepBuildLogsHandler> Cannot load application %s", appName)
+			return sdk.WrapError(err, "Cannot load application %s", appName)
 		}
 
 		// if buildNumber is 'last' fetch last build number
@@ -77,7 +77,7 @@ func (api *API) getStepBuildLogsHandler() service.Handler {
 		} else {
 			buildNumber, err = strconv.ParseInt(buildNumberS, 10, 64)
 			if err != nil {
-				return sdk.WrapError(err, "getStepBuildLogsHandler> Cannot parse build number %s", buildNumberS)
+				return sdk.WrapError(err, "Cannot parse build number %s", buildNumberS)
 			}
 		}
 
@@ -108,7 +108,7 @@ func (api *API) getBuildLogsHandler() service.Handler {
 		// Get offset
 		err := r.ParseForm()
 		if err != nil {
-			return sdk.WrapError(err, "getBuildLogsHandler> cannot parse form")
+			return sdk.WrapError(err, "cannot parse form")
 		}
 
 		var env *sdk.Environment
@@ -132,13 +132,13 @@ func (api *API) getBuildLogsHandler() service.Handler {
 		// Check that pipeline exists
 		p, err := pipeline.LoadPipeline(api.mustDB(), projectKey, pipelineName, false)
 		if err != nil {
-			return sdk.WrapError(err, "getBuildLogsHandler> Cannot load pipeline %s", pipelineName)
+			return sdk.WrapError(err, "Cannot load pipeline %s", pipelineName)
 		}
 
 		// Check that application exists
 		a, err := application.LoadByName(api.mustDB(), api.Cache, projectKey, appName, getUser(ctx))
 		if err != nil {
-			return sdk.WrapError(err, "getBuildLogsHandler> Cannot load application %s", appName)
+			return sdk.WrapError(err, "Cannot load application %s", appName)
 
 		}
 
@@ -154,7 +154,7 @@ func (api *API) getBuildLogsHandler() service.Handler {
 		} else {
 			buildNumber, err = strconv.ParseInt(buildNumberS, 10, 64)
 			if err != nil {
-				return sdk.WrapError(err, "getBuildLogsHandler> Cannot parse build number %s", buildNumberS)
+				return sdk.WrapError(err, "Cannot parse build number %s", buildNumberS)
 
 			}
 		}
@@ -163,13 +163,13 @@ func (api *API) getBuildLogsHandler() service.Handler {
 		var pipelinelogs []sdk.Log
 		pb, err := pipeline.LoadPipelineBuildByApplicationPipelineEnvBuildNumber(api.mustDB(), a.ID, p.ID, env.ID, buildNumber)
 		if err != nil {
-			return sdk.WrapError(err, "getBuildLogsHandler> Cannot load pipeline build id")
+			return sdk.WrapError(err, "Cannot load pipeline build id")
 
 		}
 
 		pipelinelogs, err = pipeline.LoadPipelineBuildLogs(api.mustDB(), pb)
 		if err != nil {
-			return sdk.WrapError(err, "getBuildLogshandler> Cannot load pipeline build logs")
+			return sdk.WrapError(err, "Cannot load pipeline build logs")
 
 		}
 
@@ -202,12 +202,12 @@ func (api *API) getPipelineBuildJobLogsHandler() service.Handler {
 		// Check that pipeline exists
 		p, err := pipeline.LoadPipeline(api.mustDB(), projectKey, pipelineName, false)
 		if err != nil {
-			return sdk.WrapError(err, "getPipelineBuildJobLogsHandler> Cannot load pipeline %s", pipelineName)
+			return sdk.WrapError(err, "Cannot load pipeline %s", pipelineName)
 		}
 
 		a, err := application.LoadByName(api.mustDB(), api.Cache, projectKey, appName, getUser(ctx))
 		if err != nil {
-			return sdk.WrapError(err, "getPipelineBuildJobLogsHandler> Cannot load application %s", appName)
+			return sdk.WrapError(err, "Cannot load application %s", appName)
 		}
 
 		var env *sdk.Environment
@@ -237,7 +237,7 @@ func (api *API) getPipelineBuildJobLogsHandler() service.Handler {
 		} else {
 			buildNumber, err = strconv.ParseInt(buildNumberS, 10, 64)
 			if err != nil {
-				return sdk.WrapError(err, "getPipelineBuildJobLogsHandler> Cannot parse build number %s", buildNumberS)
+				return sdk.WrapError(err, "Cannot parse build number %s", buildNumberS)
 			}
 		}
 
@@ -245,11 +245,11 @@ func (api *API) getPipelineBuildJobLogsHandler() service.Handler {
 		var pipelinelogs sdk.BuildState
 		pb, err := pipeline.LoadPipelineBuildByApplicationPipelineEnvBuildNumber(api.mustDB(), a.ID, p.ID, env.ID, buildNumber)
 		if err != nil {
-			return sdk.WrapError(err, "getPipelineBuildJobLogsHandler> Cannot load pipeline build id")
+			return sdk.WrapError(err, "Cannot load pipeline build id")
 		}
 		pipelinelogs, err = pipeline.LoadPipelineBuildJobLogs(api.mustDB(), pb, pipelineActionID)
 		if err != nil {
-			return sdk.WrapError(err, "getPipelineBuildJobLogsHandler> Cannot load pipeline build logs")
+			return sdk.WrapError(err, "Cannot load pipeline build logs")
 		}
 
 		return service.WriteJSON(w, pipelinelogs, http.StatusOK)
@@ -260,7 +260,7 @@ func (api *API) addBuildLogHandler() service.Handler {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 		var logs sdk.Log
 		if err := UnmarshalBody(r, &logs); err != nil {
-			return sdk.WrapError(err, "addBuildLogHandler>> Unable to parse body")
+			return sdk.WrapError(err, "Unable to parse body")
 		}
 
 		if err := pipeline.AddBuildLog(api.mustDB(), &logs); err != nil {

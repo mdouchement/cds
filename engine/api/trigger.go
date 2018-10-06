@@ -108,7 +108,7 @@ func (api *API) addTriggerHandler() service.Handler {
 		defer tx.Rollback()
 
 		if err := trigger.InsertTrigger(tx, &t); err != nil {
-			return sdk.WrapError(err, "addTriggerHandler> cannot insert trigger")
+			return sdk.WrapError(err, "cannot insert trigger")
 		}
 
 		if err := tx.Commit(); err != nil {
@@ -211,11 +211,11 @@ func (api *API) deleteTriggerHandler() service.Handler {
 		defer tx.Rollback()
 
 		if err := trigger.DeleteTrigger(tx, triggerID); err != nil {
-			return sdk.WrapError(err, "deleteTriggerHandler> cannot delete trigger")
+			return sdk.WrapError(err, "cannot delete trigger")
 		}
 
 		if err := tx.Commit(); err != nil {
-			return sdk.WrapError(err, "deleteTriggerHandler> cannot commit transaction")
+			return sdk.WrapError(err, "cannot commit transaction")
 		}
 
 		var errWorkflow error
@@ -257,11 +257,11 @@ func (api *API) updateTriggerHandler() service.Handler {
 
 		t.ID = triggerID
 		if err := trigger.UpdateTrigger(tx, &t); err != nil {
-			return sdk.WrapError(err, "updateTriggerHandler> cannot update trigger")
+			return sdk.WrapError(err, "cannot update trigger")
 		}
 
 		if err := tx.Commit(); err != nil {
-			return sdk.WrapError(err, "updateTriggerHandler> cannot commit transaction")
+			return sdk.WrapError(err, "cannot commit transaction")
 		}
 
 		var errWorkflow error

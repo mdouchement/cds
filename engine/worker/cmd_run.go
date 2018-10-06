@@ -400,7 +400,7 @@ func (w *currentWorker) processBookedWJob(wjobs chan<- sdk.WorkflowNodeJobRun) e
 	log.Debug("Try to take the workflow node job %d", w.bookedWJobID)
 	wjob, err := w.client.QueueJobInfo(w.bookedWJobID)
 	if err != nil {
-		return sdk.WrapError(err, "processBookedWJob> Unable to load workflow node job %d", w.bookedWJobID)
+		return sdk.WrapError(err, "Unable to load workflow node job %d", w.bookedWJobID)
 	}
 
 	requirementsOK, errRequirements := checkRequirements(w, &wjob.Job.Action, nil, wjob.ID)
@@ -414,7 +414,7 @@ func (w *currentWorker) processBookedWJob(wjobs chan<- sdk.WorkflowNodeJobRun) e
 			Message:    sdk.SpawnMsg{ID: sdk.MsgSpawnInfoWorkerForJobError.ID, Args: []interface{}{w.status.Name, details}},
 		}}
 		if err := w.client.QueueJobSendSpawnInfo(true, wjob.ID, infos); err != nil {
-			return sdk.WrapError(err, "processBookedWJob> Cannot record QueueJobSendSpawnInfo for job (err spawn): %d", wjob.ID)
+			return sdk.WrapError(err, "Cannot record QueueJobSendSpawnInfo for job (err spawn): %d", wjob.ID)
 		}
 		return fmt.Errorf("processBookedWJob> the worker have no all requirements")
 	}
@@ -428,7 +428,7 @@ func (w *currentWorker) processBookedWJob(wjobs chan<- sdk.WorkflowNodeJobRun) e
 			Message:    sdk.SpawnMsg{ID: sdk.MsgSpawnInfoWorkerForJobError.ID, Args: []interface{}{w.status.Name, details}},
 		}}
 		if err := w.client.QueueJobSendSpawnInfo(true, wjob.ID, infos); err != nil {
-			return sdk.WrapError(err, "processBookedWJob> Cannot record QueueJobSendSpawnInfo for job (err spawn): %d", wjob.ID)
+			return sdk.WrapError(err, "Cannot record QueueJobSendSpawnInfo for job (err spawn): %d", wjob.ID)
 		}
 		return fmt.Errorf("processBookedWJob> the worker have no all plugins")
 	}

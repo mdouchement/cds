@@ -35,7 +35,7 @@ func (api *API) uploadArtifactHandler() service.Handler {
 
 		//parse the multipart form in the request
 		if err := r.ParseMultipartForm(100000); err != nil {
-			return sdk.WrapError(err, "uploadArtifactHandler>  Error parsing multipart form")
+			return sdk.WrapError(err, " Error parsing multipart form")
 		}
 
 		//get a ref to the parsed multipart form
@@ -125,12 +125,12 @@ func (api *API) uploadArtifactHandler() service.Handler {
 		for i := range files {
 			file, err := files[i].Open()
 			if err != nil {
-				return sdk.WrapError(err, "uploadArtifactHandler> cannot open file")
+				return sdk.WrapError(err, "cannot open file")
 			}
 
 			if err := artifact.SaveFile(api.mustDB(), p, a, art, file, env); err != nil {
 				file.Close()
-				return sdk.WrapError(err, "uploadArtifactHandler> cannot save file")
+				return sdk.WrapError(err, "cannot save file")
 			}
 			file.Close()
 		}
@@ -148,21 +148,21 @@ func (api *API) downloadArtifactHandler() service.Handler {
 		// Load artifact
 		art, err := artifact.LoadArtifact(api.mustDB(), int64(artifactID))
 		if err != nil {
-			return sdk.WrapError(err, "downloadArtifactHandler> Cannot load artifact")
+			return sdk.WrapError(err, "Cannot load artifact")
 		}
 
 		f, err := objectstore.Fetch(art)
 		if err != nil {
-			return sdk.WrapError(err, "downloadArtifactHandler> Cannot fetch artifact")
+			return sdk.WrapError(err, "Cannot fetch artifact")
 		}
 
 		if _, err := io.Copy(w, f); err != nil {
 			_ = f.Close()
-			return sdk.WrapError(err, "downloadArtifactHandler> Cannot stream artifact")
+			return sdk.WrapError(err, "Cannot stream artifact")
 		}
 
 		if err := f.Close(); err != nil {
-			return sdk.WrapError(err, "downloadArtifactHandler> Cannot close artifact")
+			return sdk.WrapError(err, "Cannot close artifact")
 		}
 
 		w.Header().Add("Content-Type", "application/octet-stream")
@@ -283,7 +283,7 @@ func (api *API) downloadArtifactDirectHandler() service.Handler {
 
 		art, err := artifact.LoadArtifactByHash(api.mustDB(), hash)
 		if err != nil {
-			return sdk.WrapError(err, "downloadArtifactDirectHandler> Could not load artifact with hash %s", hash)
+			return sdk.WrapError(err, "Could not load artifact with hash %s", hash)
 		}
 
 		w.Header().Add("Content-Type", "application/octet-stream")
@@ -292,16 +292,16 @@ func (api *API) downloadArtifactDirectHandler() service.Handler {
 		log.Debug("downloadArtifactDirectHandler: Serving %s/%s", art.GetPath(), art.GetName())
 		f, err := objectstore.Fetch(art)
 		if err != nil {
-			return sdk.WrapError(err, "downloadArtifactDirectHandler> Cannot fetch artifact")
+			return sdk.WrapError(err, "Cannot fetch artifact")
 		}
 
 		if _, err := io.Copy(w, f); err != nil {
 			_ = f.Close()
-			return sdk.WrapError(err, "downloadArtifactDirectHandler> Cannot stream artifact")
+			return sdk.WrapError(err, "Cannot stream artifact")
 		}
 
 		if err := f.Close(); err != nil {
-			return sdk.WrapError(err, "downloadArtifactDirectHandler> Cannot close artifact")
+			return sdk.WrapError(err, "Cannot close artifact")
 		}
 
 		return nil
@@ -354,7 +354,7 @@ func (api *API) postArtifactWithTempURLHandler() service.Handler {
 
 		art := new(sdk.Artifact)
 		if err := UnmarshalBody(r, art); err != nil {
-			return sdk.WrapError(err, "postArtifactWithTempURLHandler> Unable to unmarshal artifact")
+			return sdk.WrapError(err, "Unable to unmarshal artifact")
 		}
 
 		art.DownloadHash = hash
@@ -367,7 +367,7 @@ func (api *API) postArtifactWithTempURLHandler() service.Handler {
 
 		url, key, err := store.StoreURL(art)
 		if err != nil {
-			return sdk.WrapError(err, "postArtifactWithTempURLHandler> Could not generate hash")
+			return sdk.WrapError(err, "Could not generate hash")
 		}
 
 		art.TempURL = url
@@ -394,7 +394,7 @@ func (api *API) postArtifactWithTempURLCallbackHandler() service.Handler {
 
 		art := new(sdk.Artifact)
 		if err := UnmarshalBody(r, art); err != nil {
-			return sdk.WrapError(err, "postArtifactWithTempURLCallbackHandler> Unable to read artifact")
+			return sdk.WrapError(err, "Unable to read artifact")
 		}
 
 		cacheKey := cache.Key("artifacts", art.GetPath(), art.GetName())
@@ -433,7 +433,7 @@ func (api *API) postArtifactWithTempURLCallbackHandler() service.Handler {
 		}
 
 		if err := artifact.InsertArtifact(api.mustDB(), pip.ID, app.ID, env.ID, *art); err != nil {
-			return sdk.WrapError(err, "postArtifactWithTempURLCallbackHandler> Unable to save artifact")
+			return sdk.WrapError(err, "Unable to save artifact")
 		}
 
 		return nil
@@ -444,7 +444,7 @@ func generateHash() (string, error) {
 	size := 128
 	bs := make([]byte, size)
 	if _, err := rand.Read(bs); err != nil {
-		return "", sdk.WrapError(err, "generateHash> rand.Read failed")
+		return "", sdk.WrapError(err, "rand.Read failed")
 	}
 	str := hex.EncodeToString(bs)
 	token := []byte(str)[0:size]

@@ -21,7 +21,7 @@ func Init() error {
 	var err error
 	projVarRegexp, err = regexp.Compile(`cds\.proj\.[a-zA-Z0-9\-_]+`)
 	if err != nil {
-		return sdk.WrapError(err, "warning.Init> Unable to compile project variable regexp")
+		return sdk.WrapError(err, "Unable to compile project variable regexp")
 	}
 	return nil
 }
@@ -34,7 +34,7 @@ func checkContentValueToAddUnusedWarning(db gorp.SqlExecutor, projKey string, va
 			switch varPrefix {
 			case "cds.proj":
 				if err := checkUnusedProjectVariable(db, projKey, v, warName); err != nil {
-					return sdk.WrapError(err, "checkContentValueToAddUnusedWarning> Unable to check porject var for unused warning")
+					return sdk.WrapError(err, "Unable to check porject var for unused warning")
 				}
 			}
 		}
@@ -49,7 +49,7 @@ func checkContentValueToRemoveUnusedWarning(db gorp.SqlExecutor, projKey string,
 		variables := reg.FindAllString(varValue, -1)
 		for _, v := range variables {
 			if err := removeProjectWarning(db, warName, v, projKey); err != nil {
-				return sdk.WrapError(err, "checkContentValueToRemoveUnusedWarning> Unable to remove warning from %s", warName)
+				return sdk.WrapError(err, "Unable to remove warning from %s", warName)
 			}
 		}
 	}
@@ -70,7 +70,7 @@ func checkUnusedProjectVariable(db gorp.SqlExecutor, projectKey string, varName 
 			},
 		}
 		if err := Insert(db, w); err != nil {
-			return sdk.WrapError(err, "checkProjectVariable> Unable to Insert warning")
+			return sdk.WrapError(err, "Unable to Insert warning")
 		}
 	}
 	return nil

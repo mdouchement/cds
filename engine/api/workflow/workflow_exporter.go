@@ -112,11 +112,11 @@ func Pull(ctx context.Context, db gorp.SqlExecutor, cache cache.Store, proj *sdk
 	}
 	if err := tw.WriteHeader(hdr); err != nil {
 		tw.Close()
-		return sdk.WrapError(err, "workflow.Pull> Unable to write workflow header %+v", hdr)
+		return sdk.WrapError(err, "Unable to write workflow header %+v", hdr)
 	}
 	if _, err := io.Copy(tw, buffw); err != nil {
 		tw.Close()
-		return sdk.WrapError(err, "workflow.Pull> Unable to copy workflow buffer")
+		return sdk.WrapError(err, "Unable to copy workflow buffer")
 	}
 
 	for _, a := range apps {
@@ -124,7 +124,7 @@ func Pull(ctx context.Context, db gorp.SqlExecutor, cache cache.Store, proj *sdk
 		size, err := application.ExportApplication(db, a, f, withPermissions, encryptFunc, buff)
 		if err != nil {
 			tw.Close()
-			return sdk.WrapError(err, "workflow.Pull> Unable to export app %s", a.Name)
+			return sdk.WrapError(err, "Unable to export app %s", a.Name)
 		}
 		hdr := &tar.Header{
 			Name: fmt.Sprintf("%s.app.yml", a.Name),
@@ -133,11 +133,11 @@ func Pull(ctx context.Context, db gorp.SqlExecutor, cache cache.Store, proj *sdk
 		}
 		if err := tw.WriteHeader(hdr); err != nil {
 			tw.Close()
-			return sdk.WrapError(err, "workflow.Pull> Unable to write app header %+v", hdr)
+			return sdk.WrapError(err, "Unable to write app header %+v", hdr)
 		}
 		if _, err := io.Copy(tw, buff); err != nil {
 			tw.Close()
-			return sdk.WrapError(err, "workflow.Pull> Unable to copy app buffer")
+			return sdk.WrapError(err, "Unable to copy app buffer")
 		}
 	}
 
@@ -146,7 +146,7 @@ func Pull(ctx context.Context, db gorp.SqlExecutor, cache cache.Store, proj *sdk
 		size, err := environment.ExportEnvironment(db, e, f, withPermissions, encryptFunc, buff)
 		if err != nil {
 			tw.Close()
-			return sdk.WrapError(err, "workflow.Pull> Unable to export env %s", e.Name)
+			return sdk.WrapError(err, "Unable to export env %s", e.Name)
 		}
 
 		hdr := &tar.Header{
@@ -156,11 +156,11 @@ func Pull(ctx context.Context, db gorp.SqlExecutor, cache cache.Store, proj *sdk
 		}
 		if err := tw.WriteHeader(hdr); err != nil {
 			tw.Close()
-			return sdk.WrapError(err, "workflow.Pull> Unable to write env header %+v", hdr)
+			return sdk.WrapError(err, "Unable to write env header %+v", hdr)
 		}
 		if _, err := io.Copy(tw, buff); err != nil {
 			tw.Close()
-			return sdk.WrapError(err, "workflow.Pull> Unable to copy env buffer")
+			return sdk.WrapError(err, "Unable to copy env buffer")
 		}
 	}
 
@@ -168,7 +168,7 @@ func Pull(ctx context.Context, db gorp.SqlExecutor, cache cache.Store, proj *sdk
 		buff := new(bytes.Buffer)
 		size, err := pipeline.ExportPipeline(p, f, withPermissions, buff)
 		if err != nil {
-			return sdk.WrapError(err, "workflow.Pull> Unable to export pipeline %s", p.Name)
+			return sdk.WrapError(err, "Unable to export pipeline %s", p.Name)
 		}
 		hdr := &tar.Header{
 			Name: fmt.Sprintf("%s.pip.yml", p.Name),
@@ -177,16 +177,16 @@ func Pull(ctx context.Context, db gorp.SqlExecutor, cache cache.Store, proj *sdk
 		}
 		if err := tw.WriteHeader(hdr); err != nil {
 			tw.Close()
-			return sdk.WrapError(err, "workflow.Pull> Unable to write pipeline header %+v", hdr)
+			return sdk.WrapError(err, "Unable to write pipeline header %+v", hdr)
 		}
 		if _, err := io.Copy(tw, buff); err != nil {
 			tw.Close()
-			return sdk.WrapError(err, "workflow.Pull> Unable to copy pip buffer")
+			return sdk.WrapError(err, "Unable to copy pip buffer")
 		}
 	}
 
 	if err := tw.Close(); err != nil {
-		return sdk.WrapError(err, "workflow.Pull> Unable to close tar writer")
+		return sdk.WrapError(err, "Unable to close tar writer")
 	}
 	return nil
 }
